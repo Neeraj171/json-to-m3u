@@ -1,10 +1,13 @@
 name: Update M3U
 
+permissions:
+  contents: write
+
 on:
+  workflow_dispatch:
+
   schedule:
     - cron: "*/5 * * * *"
-
-  workflow_dispatch:
 
 jobs:
   build:
@@ -17,18 +20,18 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
-      - name: Install dependencies
-        run: pip install -r requirements.txt
+      - name: Install requests
+        run: pip install requests
 
-      - name: Run converter
+      - name: Run script
         run: python update.py
 
-      - name: Commit updated M3U
+      - name: Push updated M3U
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git add channels.m3u
-          git commit -m "Auto update M3U" || echo "No changes"
+          git add .
+          git commit -m "Updated playlist" || echo "No changes"
           git push
